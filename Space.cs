@@ -2,7 +2,7 @@
 
 public class Space
 {
-    Tile currentTile;
+    public Tile currentTile;
     bool empty;
     string type;
     public int owner;
@@ -29,4 +29,5 @@ public class Space
     {
         return (this.currentTile.mobility * this.owner);
     }
+
 }

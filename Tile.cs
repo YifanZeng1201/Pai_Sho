@@ -12,84 +12,89 @@ public class Tile
         this.color = color;
     }
 
-    public bool checkHarmony(Tile other)
+    public bool inHarmony(Tile other)
     {
-        if (this.color == "red")
+        if (this.owner == other.owner)
         {
-            if (this.mobility == 4)
+            if (this.color == "red")
             {
-                if (other.color == "red")
+                if (this.mobility == 4)
                 {
-                    if (other.mobility == 4) return false;
-                    else return true;
-                }
-                else return false;
-            }
-            else if (this.mobility == 3)
-            {
-                if (other.color == "white")
-                {
-                    if (other.mobility == 5) return true;
+                    if (other.color == "red")
+                    {
+                        if (other.mobility == 4) return false;
+                        else return true;
+                    }
                     else return false;
+                }
+                else if (this.mobility == 3)
+                {
+                    if (other.color == "white")
+                    {
+                        if (other.mobility == 5) return true;
+                        else return false;
+                    }
+                    else
+                    {
+                        if (other.mobility == 4) return true;
+                        else return false;
+                    }
                 }
                 else
                 {
-                    if (other.mobility == 4) return true;
-                    else return false;
+                    if (other.color == "white")
+                    {
+                        if (other.mobility == 3) return true;
+                        else return false;
+                    }
+                    else
+                    {
+                        if (other.mobility == 4) return true;
+                        else return false;
+                    }
                 }
             }
             else
             {
-                if (other.color == "white")
+                if (this.mobility == 4)
                 {
-                    if (other.mobility == 3) return true;
+                    if (other.color == "white")
+                    {
+                        if (other.mobility == 4) return false;
+                        else return true;
+                    }
                     else return false;
+                }
+                else if (this.mobility == 3)
+                {
+                    if (other.color == "red")
+                    {
+                        if (other.mobility == 5) return true;
+                        else return false;
+                    }
+                    else
+                    {
+                        if (other.mobility == 4) return true;
+                        else return false;
+                    }
                 }
                 else
                 {
-                    if (other.mobility == 4) return true;
-                    else return false;
+                    if (other.color == "red")
+                    {
+                        if (other.mobility == 3) return true;
+                        else return false;
+                    }
+                    else
+                    {
+                        if (other.mobility == 4) return true;
+                        else return false;
+                    }
                 }
             }
         }
-        else
-        {
-            if (this.mobility == 4)
-            {
-                if (other.color == "white")
-                {
-                    if (other.mobility == 4) return false;
-                    else return true;
-                }
-                else return false;
-            }
-            else if (this.mobility == 3)
-            {
-                if (other.color == "red")
-                {
-                    if (other.mobility == 5) return true;
-                    else return false;
-                }
-                else
-                {
-                    if (other.mobility == 4) return true;
-                    else return false;
-                }
-            }
-            else
-            {
-                if (other.color == "red")
-                {
-                    if (other.mobility == 3) return true;
-                    else return false;
-                }
-                else
-                {
-                    if (other.mobility == 4) return true;
-                    else return false;
-                }
-            }
-        }
+        else return false;
+        
     }
 }
 
