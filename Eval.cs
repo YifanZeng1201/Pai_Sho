@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* Author: Andrew Crapitto
+ * Updated: 5/04/2019
+ */
+
+using System;
 
 namespace Pai_Sho
 {
@@ -79,9 +83,9 @@ namespace Pai_Sho
                         }
                         for (int h = j; h >= 0; h--)
                         {
-                            if (!arr[i][k].isEmpty())
+                            if (!arr[i][h].isEmpty())
                             {
-                                if (arr[i][j].currentTile.inHarmony(arr[i][k].currentTile) && !blockedl) sum++;
+                                if (arr[i][j].currentTile.inHarmony(arr[i][h].currentTile) && !blockedl) sum++;
                                 blockedl = true;
                             }
                         }
@@ -94,12 +98,19 @@ namespace Pai_Sho
         private int count_junctions(Space[][] arr)
         {
             int sum = 0;
+            for (int i = 0; i < 19; i++)
+            {
+                for (int j = 0; j < 19; j++)
+                {
+                    if (arr[i][j].currentTile.isJunction()) sum++;
+                }
+            }
             return sum;
         }
 
-        static void Main(string[] args)
+        public int evaluation(Space[][] board)
         {
-            ;
+            return count_harmonies(board) + count_junctions(board) + piece_value(board) + open_ports(board);
         }
     }
 }
