@@ -1,15 +1,61 @@
-﻿using System;
+﻿/* Author: Andrew Crapitto
+ * Updated: 5/04/2019
+ */
+
+using System;
 
 public class Tile
 {
-    public int mobility, owner;
-    string color;
 
-    public Tile(int val, int owner, string color)
+    static char ROCK = 'r';
+    static char WHEEL = 'w';
+    static char KNOTWEED = 'k';
+    static char BOAT = 'b';
+    static char LOTUS = 'l';
+    static char ORCHID = 'o';
+    static char BASIC = 'f';
+    static char NULL = 'n';
+
+    public int mobility, owner;
+    public string color;
+    bool junction, exists, flower;
+    char specid;
+
+    // Initializer for a special tile
+    public Tile(int val, int owner, string color, char spec)
     {
+        this.exists = true;
+        this.junction = false;
+        this.flower = false;
         this.mobility = val;
         this.owner = owner;
         this.color = color;
+        this.specid = spec;
+    }
+
+    // Initializer for a basic flower tile
+    public Tile(int val, int owner, string color)
+    {
+        this.exists = true;
+        this.junction = false;
+        this.flower = true;
+        this.mobility = val;
+        this.owner = owner;
+        this.color = color;
+        this.specid = BASIC;
+    }
+
+    // Initializer for a null space
+    public Tile()
+    {
+        this.exists = false;
+        this.junction = false;
+        this.flower = false;
+        this.mobility = 0;
+        this.owner = 0;
+        this.color = null;
+        this.specid = NULL;
+        
     }
 
     public bool inHarmony(Tile other)
@@ -95,6 +141,16 @@ public class Tile
         }
         else return false;
         
+    }
+
+    public bool isJunction()
+    {
+        return this.junction;
+    }
+
+    public bool isFlower()
+    {
+        return flower;
     }
 }
 
