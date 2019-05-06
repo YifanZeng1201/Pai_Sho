@@ -108,6 +108,8 @@ namespace Pai_Sho
             return sum;
         }
 
+        // This is the main evaluation function to be used by the minimax algorithm
+        // Call this function to get the score of a board state
         public int evaluation(Space[][] board)
         {
             return count_harmonies(board) + count_junctions(board) + piece_value(board) + open_ports(board);
