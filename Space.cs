@@ -9,7 +9,7 @@ public class Space
     public Tile currentTile;
     public string type;
     public int owner;
-    int i, j;
+    public int i, j;
     bool empty;
 
     // Initializer for an empty space
