@@ -16,7 +16,10 @@ public class Tile
     static char BASIC = 'f';
     static char NULL = 'n';
 
-    public int mobility, owner;
+    static char RED = 'R';
+    static char WHITE = 'W';
+
+    public int mobility, owner, i, j;
     public string color;
     bool junction, exists, flower;
     char specid;
@@ -31,6 +34,8 @@ public class Tile
         this.owner = owner;
         this.color = color;
         this.specid = spec;
+        this.i = -1;
+        this.j = -1;
     }
 
     // Initializer for a basic flower tile
@@ -43,6 +48,8 @@ public class Tile
         this.owner = owner;
         this.color = color;
         this.specid = BASIC;
+        this.i = -1;
+        this.j = -1;
     }
 
     // Initializer for a null space
