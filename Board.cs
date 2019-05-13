@@ -235,7 +235,15 @@ namespace Pai_Sho
             {
                 for (int j = 0; j < 19; j++)
                 {
-                    newB.game_board[i][j] = this.game_board[i][j];
+                    Space oldS = this.game_board[i][j];
+                    Space newS = new Space(oldS.type, oldS.i, oldS.j);
+
+                    Tile oldT = oldS.currentTile;
+                    Tile newT = new Tile(oldT.mobility, oldT.owner, oldT.color, oldT.getID());
+
+                    newS.currentTile = newT;
+
+                    newB.game_board[i][j] = newS;
                 }
             }
             return newB;

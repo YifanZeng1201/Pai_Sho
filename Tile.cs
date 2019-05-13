@@ -159,5 +159,10 @@ public class Tile
     {
         return flower;
     }
+
+    public char getID()
+    {
+        return this.specid;
+    }
 }
 
