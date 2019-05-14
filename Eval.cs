@@ -1,10 +1,12 @@
 ﻿/* Author: Andrew Crapitto
- * Updated: 5/04/2019
+ * Updated: 5/13/2019
  */
+
+ // Changelog: 5/13/2019: Made methods static for use in the minimax algorithm
 
 using System;
 
-namespace Paisho
+namespace Pai_Sho
 {
 
     class Eval
@@ -30,6 +32,7 @@ namespace Paisho
             }
             return sum;
         }
+
         static private int piece_value(Space[][] arr)
         {
             int sum = 0;
@@ -44,6 +47,7 @@ namespace Paisho
             }
             return sum;
         }
+
         static private int count_harmonies(Space[][] arr)
         {
             int sum = 0;
@@ -92,6 +96,7 @@ namespace Paisho
             }
             return sum/2;
         }
+
         static private int count_junctions(Space[][] arr)
         {
             int sum = 0;
