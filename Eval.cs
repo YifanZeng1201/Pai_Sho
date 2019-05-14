@@ -9,7 +9,7 @@ namespace Paisho
 
     class Eval
     {
-        private static int open_ports(Space[][] arr)
+        static private int open_ports(Space[][] arr)
         {
             int sum = 0;
             if (arr[1][9].isEmpty())
@@ -30,8 +30,7 @@ namespace Paisho
             }
             return sum;
         }
-
-        private static int piece_value(Space[][] arr)
+        static private int piece_value(Space[][] arr)
         {
             int sum = 0;
             for (int j = 0; j < 19; j++)
@@ -45,8 +44,7 @@ namespace Paisho
             }
             return sum;
         }
-
-        private static int count_harmonies(Space[][] arr)
+        static private int count_harmonies(Space[][] arr)
         {
             int sum = 0;
             bool blockedu = false, blockedd = false, blockedl = false, blockedr = false;
@@ -94,8 +92,7 @@ namespace Paisho
             }
             return sum/2;
         }
-
-        private static int count_junctions(Space[][] arr)
+        static private int count_junctions(Space[][] arr)
         {
             int sum = 0;
             for (int i = 0; i < 19; i++)
@@ -110,7 +107,7 @@ namespace Paisho
 
         // This is the main evaluation function to be used by the minimax algorithm
         // Call this function to get the score of a board state
-        public static int evaluation(Space[][] board)
+        static public int evaluation(Space[][] board)
         {
             return count_harmonies(board) + count_junctions(board) + piece_value(board) + open_ports(board);
         }
