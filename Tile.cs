@@ -2,6 +2,7 @@
  * Updated: 5/04/2019
  */
 
+// Changelog: 5/13/2019: Added i and j parameters to keep track of location on board, added getID() so that the special ID won't have to be public
 using System;
 
 public class Tile

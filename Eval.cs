@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Pai_Sho
+namespace Paisho
 {
 
     class Eval
@@ -30,7 +30,6 @@ namespace Pai_Sho
             }
             return sum;
         }
-
         static private int piece_value(Space[][] arr)
         {
             int sum = 0;
@@ -45,7 +44,6 @@ namespace Pai_Sho
             }
             return sum;
         }
-
         static private int count_harmonies(Space[][] arr)
         {
             int sum = 0;
@@ -94,7 +92,6 @@ namespace Pai_Sho
             }
             return sum/2;
         }
-
         static private int count_junctions(Space[][] arr)
         {
             int sum = 0;

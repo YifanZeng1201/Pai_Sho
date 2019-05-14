@@ -1,6 +1,8 @@
 ﻿/* Author: Andrew Crapitto
- * Updated: 5/04/2019
+ * Updated: 5/13/2019
  */
+
+ // Changelog: 5/13/2019: Added the paremeters i and j to keep track of coordinates, aded the emptyUp() method to be used when moving tiles
 
 using System;
 
@@ -66,6 +68,13 @@ public class Space
     {
         if (this.type == null) return true;
         else return false;
+    }
+
+    public void emptyUp()
+    {
+        this.currentTile = null;
+        this.empty = true;
+        this.owner = 0;
     }
 
 }

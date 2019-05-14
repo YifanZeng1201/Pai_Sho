@@ -61,6 +61,7 @@ namespace Paisho
             List<Space> PossTile = board.occupied;
             List<Tile> currentTiles = new List<Tile>();
             List<Tile> oppTiles = new List<Tile>();
+
             foreach (Space s in PossTile)
             {
                 Tile t = s.getTile();
