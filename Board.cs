@@ -4,6 +4,7 @@
 
 // Changelog: 5/4/2019: Finished cleaning things up, changed array type of the board, changed from ArrayList to List<>, made Space and Tile seperate classes
 // Changelog: 5/12/2019: Fixed up some issues that I found in the initializer, created the Print function to print out the board to the console
+// Changelog: 5/13/2019: Created the copy method that returns a copy of the current board state, add the move tile method as a variation on the place tile method
 
 using System;
 using System.Collections.Generic;
@@ -120,13 +121,14 @@ namespace Pai_Sho
 
         }
 
-        public List<Space> poss_moves(Tile tile, int x, int y)
+        public List<Space> poss_moves(Space space)
         {
+            Tile tile = space.currentTile;
             List<Space> ans = new List<Space>();
             int speed = tile.mobility;
             // Ask: what is the point of posx and posy?
-            int posx = x;
-            int posy = y;
+            int posx = space.j;
+            int posy = space.i;
             for (int i = posx - speed; i <= posx + speed; i++)
             {
                 for (int r = posy - speed; r <= posx + speed; r++)
@@ -155,7 +157,7 @@ namespace Pai_Sho
                     }
                 }
             }
-                    return ans;
+            return ans;
         }
 
         // t1 should be the tile known to be a flower
@@ -228,6 +230,12 @@ namespace Pai_Sho
             occupied.Add(game_board[i][j]);
         }
 
+        public void move_tile(int i, int j, int di, int dj)
+        {
+            place_tile(di, dj, game_board[i][j].currentTile);
+            game_board[i][j].emptyUp();
+        }
+
         public Board copy()
         {
             Board newB = new Board();
@@ -240,7 +248,7 @@ namespace Pai_Sho
 
                     Tile oldT = oldS.currentTile;
                     Tile newT = new Tile(oldT.mobility, oldT.owner, oldT.color, oldT.getID());
-
+                    
                     newS.currentTile = newT;
 
                     newB.game_board[i][j] = newS;
