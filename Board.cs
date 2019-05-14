@@ -178,6 +178,35 @@ namespace Pai_Sho
             }
         }
 
+        public bool harmony(Tile t1, Tile t2) {
+            if (t1.owner!=t2.owner) {
+                return false;
+            }
+            if (t1.mobility == t2.mobility) {
+                return false;
+            } else {
+
+                if (t1.mobility == 5) {
+
+                    if ((t2.mobility==3 && t2.color!=t1.color) || (t2.mobility == 4 && t2.color == t1.color)) {
+                        return true;
+                    }
+
+                } else if (t1.mobility == 4) {
+
+                    if (t1.color==t2.color) {
+                        return true;
+                    }
+
+                } else if (t1.mobility==3) {
+                    if ((t2.mobility == 5 && t2.color != t1.color) || (t2.mobility == 4 && t2.color == t1.color)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         //TODO fix this code to adapt for the new spaces and tiles classes
         // t1 is the tile that is being moved, and t2 is the tile that is bing moved to
         // Ask: What is the point of this code as a whole?
@@ -243,10 +272,149 @@ namespace Pai_Sho
 
         }
         //TODOS kid of necessary for the full UI and winn condition function
+        // builds the appropriate harmonies
+        // if harmonies from different players overlap, their owner value is set to 2
+        // otherwise, the owner value of the spaces in the harmony are set to that of the appropriate player
         public void build_harmonies(Space start) {
             int y = start.i;
             int x = start.j;
-            
+
+            // Checks up the y-axis
+            for (int i = 0; i + y <= 17; i++)
+            {
+                Space s1 = game_board[y + i][x];
+                if (!s1.isEmpty()){
+                    // return to start tile while building the harmony
+                    if (harmony(start.currentTile,s1.currentTile)) {
+                        for (int k=0; i-k>=0;i++) {
+                            if (game_board[y + i - k][x].owner == 2)
+                            {
+                                continue;
+                            } // intended to set owner value to 2 if this space is already a part of a different harmony
+                            else if (game_board[y + i - k][x].owner == (start.owner * -1))
+                            {
+                                game_board[y + i - k][x].owner = 2;
+                            }
+                            else {
+                                game_board[y + i - k][x].owner = start.owner;
+                            }
+                        }
+                    }
+                    break;
+                }
+                else continue;
+            }
+
+            // Checks down the y-axis
+            for (int i = 0; i - y >= 1; i++)
+            {
+                Space s1 = game_board[y - i][x];
+                if (!s1.isEmpty())
+                {
+                    // return to start tile while building the harmony
+                    if (harmony(start.currentTile, s1.currentTile))
+                    {
+                        for (int k = 0; i - k >= 0; i++)
+                        {
+                            if (game_board[(y - i) + k][x].owner == 2)
+                            {
+                                continue;
+                            } // intended to set owner value to 2 if this space is already a part of a different player's harmony
+                            else if (game_board[(y - i) + k][x].owner == (start.owner * -1))
+                            {
+                                game_board[(y - i) + k][x].owner = 2;
+                            }
+                            else
+                            {
+                                game_board[(y - i) + k][x].owner = start.owner;
+                            }
+                        }
+                    }
+                    break;
+                }
+                else continue;
+            }
+
+            // Checks down the x-axis
+            for (int i = 0; i - x >= 1; i++)
+            {
+                Space s1 = game_board[y][x-1];
+                if (!s1.isEmpty())
+                {
+                    // return to start tile while building the harmony
+                    if (harmony(start.currentTile, s1.currentTile))
+                    {
+                        for (int k = 0; i - k >= 0; i++)
+                        {
+                            if (game_board[y][(x-i)+k].owner == 2)
+                            {
+                                continue;
+                            } // intended to set owner value to 2 if this space is already a part of a different player's harmony
+                            else if (game_board[y][(x - i) + k].owner == (start.owner * -1))
+                            {
+                                game_board[y][(x - i) + k].owner = 2;
+                            }
+                            else
+                            {
+                                game_board[y][(x - i) + k].owner = start.owner;
+                            }
+                        }
+                    }
+                    break;
+                }
+                
+                else continue;
+            }
+
+            // Checks up the x-axis
+            for (int i = 0; i + x <= 17; i++)
+            {
+                Space s1 = game_board[y][x - 1];
+                if (!s1.isEmpty())
+                {
+                    // return to start tile while building the harmony
+                    if (harmony(start.currentTile, s1.currentTile))
+                    {
+                        for (int k = 0; i - k >= 0; i++)
+                        {
+                            if (game_board[y][(x + i) - k].owner == 2)
+                            {
+                                continue;
+                            } // intended to set owner value to 2 if this space is already a part of a different player's harmony
+                            else if (game_board[y][(x + i) - k].owner == (start.owner * -1))
+                            {
+                                game_board[y][(x + i) - k].owner = 2;
+                            }
+                            else
+                            {
+                                game_board[y][(x + i) - k].owner = start.owner;
+                            }
+                        }
+                    }
+                    break;
+                }
+                else continue;
+            }
+        }
+
+
+        
+
+        public void remove_all_harmonies() {
+            for (int i=0; i<19;i++) {
+                for (int k=0; k<19;k++) {
+                    if (game_board[i][k].isEmpty()) {
+                        game_board[i][k].owner = 0;
+                    }
+                }
+            }
+
+        }
+
+        public void build_all_harmonies() {
+            foreach (Space sp in occupied) {
+                this.build_harmonies(game_board[sp.i][sp.j]);
+            }
         }
 
         public Board copy()
@@ -333,6 +501,7 @@ namespace Pai_Sho
 
         }
 
+        // a recursive function that essentially fills the board to check for any "leaks" that would indicate that the player has not won
         public bool win_condition_helper(int player_val, bool[,] visited, int y, int x)
         {
             bool north = true;
@@ -346,10 +515,13 @@ namespace Pai_Sho
             {
                 return false;
             }
-            else if (game_board[y][x].owner == player_val)
+            else if (game_board[y][x].owner == player_val || game_board[y][x].owner==2)
             {
                 visited[y, x] = true;
                 return true;
+            }
+            else {
+                visited[y, x] = true;
             }
 
             //checks the north direction
