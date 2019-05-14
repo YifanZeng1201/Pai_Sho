@@ -1,13 +1,14 @@
 ﻿/* Author: Yifan Zeng
  * Updated 5.6.2019
  */
-
+ //Updated 5/14 : made non-intrusive changes for the sake of compatability
+using Pai_Sho;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Paisho
+namespace Pai_sho
 {
     public class AI
     {
@@ -59,40 +60,40 @@ namespace Paisho
         {
             Tree<int> gameTree = new Tree<int>(0);
             List<Space> PossTile = board.occupied;
-            List<Tile> currentTiles = new List<Tile>();
-            List<Tile> oppTiles = new List<Tile>();
+            List<Space> currentTiles = new List<Space>();
+            List<Space> oppTiles = new List<Space>();
 
             foreach (Space s in PossTile)
             {
-                Tile t = s.getTile();
-                if (t.owner == -1 && t.isFlower())
+                //Tile t = s.getTile();
+                if (s.getTile().owner == -1 && s.getTile().isFlower())
                 {
-                    currentTiles.Add(t);
+                    currentTiles.Add(s);
                 }
-                if (t.owner == 1 && t.isFlower())
+                if (s.getTile().owner == 1 && s.getTile().isFlower())
                 {
-                    oppTiles.Add(t);
+                    oppTiles.Add(s);
                 }
             }
-            foreach (Tile t1 in currentTiles)
+            foreach (Space s1 in currentTiles)
             {
-                //Board cpy= board.copy
-                List<Space> moves = cpy.poss_moves(t1);
+                Board cpy = board.copy();
+                List<Space> moves = cpy.poss_moves(s1);
                 foreach (Space m in moves)
                 {
 
-                    m.setTile(t1);
-                    int value = Eval.evaluation(cpy);
+                    board.move_tile(s1.i,s1.j,m.i,m.j);  
+                    int value = Eval.evaluation(cpy.getBoard());
                     Treenode<int> child1 = new Treenode<int>(value);
                     gameTree.Root.AddChild(child1);
-                    foreach (Tile t2 in oppTiles)
+                    foreach (Space s2 in oppTiles)
                     {
-                        // Board cpy2= cpy.copy
-                        List<Space> oppMoves = cpy2.poss_move(t2);
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
                         foreach (Space o in oppMoves)
                         {
-                            o.setTile(t2);
-                            int oppValue = Eval.evaluation(cpy2);
+                            board.move_tile(m.i, m.j, o.i, o.j);
+                            int oppValue = Eval.evaluation(cpy2.getBoard());
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }

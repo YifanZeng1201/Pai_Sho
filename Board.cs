@@ -5,6 +5,7 @@
 // Changelog: 5/4/2019: Finished cleaning things up, changed array type of the board, changed from ArrayList to List<>, made Space and Tile seperate classes
 // Changelog: 5/12/2019: Fixed up some issues that I found in the initializer, created the Print function to print out the board to the console
 // Changelog: 5/13/2019: Created the copy method that returns a copy of the current board state, add the move tile method as a variation on the place tile method
+// Changelog: 5/14/2019
 
 using System;
 using System.Collections.Generic;
@@ -121,6 +122,10 @@ namespace Pai_Sho
 
         }
 
+        public ref Space[][] getBoard() {
+            return ref game_board;
+        }
+
         public List<Space> poss_moves(Space space)
         {
             Tile tile = space.currentTile;
@@ -188,6 +193,7 @@ namespace Pai_Sho
                     return true;
                 }
                 // Ask: Why do we have a break statement here? I changed this to a continue
+
                 else continue;
 
             }
@@ -234,6 +240,13 @@ namespace Pai_Sho
         {
             place_tile(di, dj, game_board[i][j].currentTile);
             game_board[i][j].emptyUp();
+
+        }
+        //TODOS kid of necessary for the full UI and winn condition function
+        public void build_harmonies(Space start) {
+            int y = start.i;
+            int x = start.j;
+            
         }
 
         public Board copy()
@@ -302,6 +315,67 @@ namespace Pai_Sho
                 }
                 Console.WriteLine("");
             }
+        }
+
+        public bool win_condition(int player_val)
+        {
+
+            bool[,] arry = new bool[19, 19];
+
+            for (int i = 1; i <= 17; i++)
+            {
+                for (int f = 1; f <= 17; f++)
+                {
+                    arry[i, f] = false; ;
+                }
+            }
+            return this.win_condition_helper(player_val, arry, 9, 9);
+
+        }
+
+        public bool win_condition_helper(int player_val, bool[,] visited, int y, int x)
+        {
+            bool north = true;
+            bool south = true;
+            bool east = true;
+            bool west = true;
+
+            //checks self aka basecase
+
+            if (game_board[y][x] == null)
+            {
+                return false;
+            }
+            else if (game_board[y][x].owner == player_val)
+            {
+                visited[y, x] = true;
+                return true;
+            }
+
+            //checks the north direction
+            if (y - 1 >= 0 && !visited[y - 1, x])
+            {
+                north = this.win_condition_helper(player_val, visited, y - 1, x);
+            }
+            //checks the south direction
+            if (y + 1 <= 18 && !visited[y + 1, x])
+            {
+                south = this.win_condition_helper(player_val, visited, y + 1, x);
+            }
+            //checks the east direction
+            if (x + 1 <= 18 && !visited[y, x + 1])
+            {
+                east = this.win_condition_helper(player_val, visited, y, x + 1);
+            }
+            //checks the west direction
+            if (x - 1 >= 0 && !visited[y, x - 1])
+            {
+                west = this.win_condition_helper(player_val, visited, y, x - 1);
+            }
+
+            return north && south && east && west;
+
+
         }
 
     }
