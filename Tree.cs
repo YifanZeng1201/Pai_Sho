@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Paisho
-{
     public class Treenode<T>
     {
         private T value;
@@ -64,8 +62,8 @@ namespace Paisho
     public class Tree<T>
     {
         private Treenode<T> root;
-        
-        public Tree (T value)
+
+        public Tree(T value)
         {
             if (value == null)
             {
@@ -74,7 +72,7 @@ namespace Paisho
             this.root = new Treenode<T>(value);
         }
 
-        public Tree (T value, params Tree<T>[] children):this(value)
+        public Tree(T value, params Tree<T>[] children) : this(value)
         {
             foreach (Tree<T> child in children)
             {
@@ -90,5 +88,3 @@ namespace Paisho
             }
         }
     }
-
-}

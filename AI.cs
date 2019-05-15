@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections;
+﻿/* Author: Yifan Zeng
+ * Updated 5.6.2019
+ */
+//Updated 5/14 : made non-intrusive changes for the sake of compatability
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Paisho
-{
     public class AI
     {
 
         static int MAX = 10000;
         static int MIN = -10000;
 
-        public int Minimax(int depth, Treenode<int> root, bool isMaxPlayer, int alpha, int beta)
+        static public int Minimax(int depth, Treenode<int> root, bool isMaxPlayer, int alpha, int beta)
         {
-            if (depth == 3)
+            if (depth == 2)
             {
                 return root.Value;
             }
@@ -21,7 +24,7 @@ namespace Paisho
             if (isMaxPlayer)
             {
                 int best = MIN;
-                for (int i=0; i<root.ChildrenCount; i++)
+                for (int i = 0; i < root.ChildrenCount; i++)
                 {
                     int val = Minimax(depth + 1, root.GetChild(i), false, alpha, beta);
                     best = Math.Max(best, val);
@@ -36,7 +39,7 @@ namespace Paisho
             else
             {
                 int best = MAX;
-                for (int i=0; i<root.ChildrenCount; i++)
+                for (int i = 0; i < root.ChildrenCount; i++)
                 {
                     int val = Minimax(depth + 1, root.GetChild(i), true, alpha, beta);
                     best = Math.Min(best, val);
@@ -51,10 +54,532 @@ namespace Paisho
         }
 
         // development in progress
-        public Treenode<int> gameTree()
+
+        static public Treenode<int> buildGameTree(Board board)
         {
             Tree<int> gameTree = new Tree<int>(0);
+            List<Space> currentTiles = new List<Space>();
+            List<Space> oppTiles = new List<Space>();
+
+            foreach (Space s in board.occupied)
+            {
+                if (s.getTile().owner == -1 && s.getTile().isFlower())
+                {
+                    currentTiles.Add(s);
+                }
+                if (s.getTile().owner == 1 && s.getTile().isFlower())
+                {
+                    oppTiles.Add(s);
+                }
+            }
+            foreach (Tile t1 in board.ai)
+            {
+                Board cpy = board.copy();
+                if (board.game_board[9][17].isEmpty())
+                {
+                    cpy.place_tile(9, 17, t1);
+                    int value = Eval.evaluation(cpy.game_board);
+                    Treenode<int> child1 = new Treenode<int>(value);
+                    gameTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (cpy2.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+                if (board.game_board[9][1].isEmpty())
+                {
+                    cpy.place_tile(9, 1, t1);
+                    int value = Eval.evaluation(cpy.game_board);
+                    Treenode<int> child1 = new Treenode<int>(value);
+                    gameTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (cpy2.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                        cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+                if (board.game_board[1][9].isEmpty())
+                {
+                    cpy.place_tile(1, 9, t1);
+                    int value = Eval.evaluation(cpy.game_board);
+                    Treenode<int> child1 = new Treenode<int>(value);
+                    gameTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (cpy2.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+
+                }
+                if (board.game_board[17][9].isEmpty())
+                {
+                    cpy.place_tile(17, 9, t1);
+                    int value = Eval.evaluation(cpy.game_board);
+                    Treenode<int> child1 = new Treenode<int>(value);
+                    gameTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (cpy2.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+
+            }
+            foreach (Space s1 in currentTiles)
+            {
+                Board cpy = board.copy();
+                List<Space> moves = cpy.poss_moves(s1);
+                foreach (Space m in moves)
+                {
+
+                    cpy.move_tile(s1.i, s1.j, m.i, m.j);
+                    int value = Eval.evaluation(cpy.game_board);
+                    Treenode<int> child1 = new Treenode<int>(value);
+                    gameTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (cpy2.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                        if (cpy2.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            int oppValue = Eval.evaluation(cpy2.game_board);
+                            Treenode<int> child2 = new Treenode<int>(oppValue);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+            }
             return gameTree.Root;
         }
+
+        static public Treenode<Board> buildBoardTree(Board board)
+        {
+            Tree<Board> boardTree = new Tree<Board>(board);
+            List<Space> currentTiles = new List<Space>();
+            List<Space> oppTiles = new List<Space>();
+            foreach (Space s in board.occupied)
+            {
+                if (s.getTile().owner == -1 && s.getTile().isFlower())
+                {
+                    currentTiles.Add(s);
+                }
+                if (s.getTile().owner == 1 && s.getTile().isFlower())
+                {
+                    oppTiles.Add(s);
+                }
+            }
+
+            foreach (Tile t1 in board.ai)
+            {
+                Board cpy = board.copy();
+                if (board.game_board[9][17].isEmpty())
+                {
+                    cpy.place_tile(9, 17, t1);
+                    cpy.ai.Remove(t1);
+                    Treenode<Board> child1 = new Treenode<Board>(cpy);
+                    boardTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (board.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+                if (board.game_board[9][1].isEmpty())
+                {
+                    cpy.place_tile(9, 1, t1);
+                    cpy.ai.Remove(t1);
+                    Treenode<Board> child1 = new Treenode<Board>(cpy);
+                    boardTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (board.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+                if (board.game_board[1][9].isEmpty())
+                {
+                    cpy.place_tile(1, 9, t1);
+                    cpy.ai.Remove(t1);
+                    Treenode<Board> child1 = new Treenode<Board>(cpy);
+                    boardTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (board.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+
+                }
+                if (board.game_board[17][9].isEmpty())
+                {
+                    cpy.place_tile(17, 9, t1);
+                    cpy.ai.Remove(t1);
+                    Treenode<Board> child1 = new Treenode<Board>(cpy);
+                    boardTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (board.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+
+            }
+            foreach (Space s1 in currentTiles)
+            {
+                Board cpy = board.copy();
+                List<Space> moves = cpy.poss_moves(s1);
+                foreach (Space m in moves)
+                {
+
+                    cpy.move_tile(s1.i, s1.j, m.i, m.j);
+                    Treenode<Board> child1 = new Treenode<Board>(cpy);
+                    boardTree.Root.AddChild(child1);
+                    foreach (Tile t2 in board.player)
+                    {
+                        Board cpy2 = cpy.copy();
+                        if (board.game_board[9][17].isEmpty())
+                        {
+                            cpy2.place_tile(9, 17, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[9][1].isEmpty())
+                        {
+                            cpy2.place_tile(9, 1, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[1][9].isEmpty())
+                        {
+                            cpy2.place_tile(1, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                        if (board.game_board[17][9].isEmpty())
+                        {
+                            cpy2.place_tile(17, 9, t2);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+
+                    }
+                    foreach (Space s2 in oppTiles)
+                    {
+                        Board cpy2 = cpy.copy();
+                        List<Space> oppMoves = cpy2.poss_moves(s2);
+                        foreach (Space o in oppMoves)
+                        {
+                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                            Treenode<Board> child2 = new Treenode<Board>(cpy2);
+                            child1.AddChild(child2);
+                        }
+                    }
+                }
+            }
+            return boardTree.Root;
+        }
+
+        static public Board makeMove(int value, Treenode<int> gameTree, Treenode<Board> boardTree)
+        {
+            int index = -1;
+            for (int i = 0; i < gameTree.ChildrenCount; i++)
+            {
+                Treenode<int> choice = gameTree.GetChild(i);
+                for (int j = 0; j < choice.ChildrenCount; j++)
+                {
+                    int result = choice.GetChild(j).Value;
+                    if (result == value)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index == i)
+                {
+                    break;
+                }
+            }
+            Board move = boardTree.GetChild(index).Value;
+            return move;
+        }
+
     }
-}

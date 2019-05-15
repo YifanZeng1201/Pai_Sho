@@ -3,12 +3,12 @@
  */
 
 // Changelog: 5/4/2019: Finished cleaning things up, changed array type of the board, changed from ArrayList to List<>, made Space and Tile seperate classes
+// Changelog: 5/12/2019: Fixed up some issues that I found in the initializer, created the Print function to print out the board to the console
+// Changelog: 5/13/2019: Created the copy method that returns a copy of the current board state, add the move tile method as a variation on the place tile method
 
 using System;
 using System.Collections.Generic;
 
-namespace Pai_Sho
-{
     public class Board
     {
         static string RED = "red";
@@ -16,148 +16,147 @@ namespace Pai_Sho
         static string NEUT = "neutral";
         static string PORT = "port";
 
+        public Space[][] game_board;
+        public List<Tile> player;
+        public List<Tile> ai;
 
-        static char ROCK = 'r';
-        static char WHEEL = 'w';
-        static char KNOTWEED = 'k';
-        static char BOAT = 'b';
-        static char LOTUS = 'l';
-        static char ORCHID = 'o';
-
-        static int HOST = 0;
-        static int GUEST = 1;
-
-        Space[][] game_board;
-        //number of red tiles on the board
-        int num_red_tiles;
-        //number of white tiles one the board
-        int num_white_tiles;
-
-        List<Space> occupied = new List<Space>();
+        public List<Space> occupied = new List<Space>();
 
         //row one is at the very tope of the game board
         public Board()
         {
+
+            this.ai = new List<Tile>();
+            this.player = new List<Tile>();
+
             game_board = new Space[19][];
             for (int i = 0; i < 19; i++) game_board[i] = new Space[19];
 
-            for (int i = 0; i <= 18; i++)
+            for (int i = 0; i < 19; i++)
             {
-                game_board[0][i] = new Space();
+                game_board[0][i] = new Space(0, i);
                 //null spaces
-                if (i <= 4 || i >= 14) game_board[1][i] = new Space();
-                if (i <= 3 || i >= 15) game_board[2][i] = new Space();
-                if (i <= 2 || i >= 16) game_board[3][i] = new Space();
-                if (i <= 1 || i >= 17) game_board[4][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[5][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[6][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[7][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[8][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[9][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[10][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[11][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[12][i] = new Space();
-                if (i <= 0 || i >= 18) game_board[13][i] = new Space();
-                if (i <= 1 || i >= 17) game_board[14][i] = new Space();
-                if (i <= 2 || i >= 16) game_board[15][i] = new Space();
-                if (i <= 3 || i >= 15) game_board[16][i] = new Space();
-                if (i <= 4 || i >= 14) game_board[17][i] = new Space();
-                game_board[18][i] = new Space();
+                if (i <= 4 || i >= 14) game_board[1][i] = new Space(1, i);
+                if (i <= 3 || i >= 15) game_board[2][i] = new Space(2, i);
+                if (i <= 2 || i >= 16) game_board[3][i] = new Space(3, i);
+                if (i <= 1 || i >= 17) game_board[4][i] = new Space(4, i);
+                if (i <= 0 || i >= 18) game_board[5][i] = new Space(5, i);
+                if (i <= 0 || i >= 18) game_board[6][i] = new Space(6, i);
+                if (i <= 0 || i >= 18) game_board[7][i] = new Space(7, i);
+                if (i <= 0 || i >= 18) game_board[8][i] = new Space(8, i);
+                if (i <= 0 || i >= 18) game_board[9][i] = new Space(9, i);
+                if (i <= 0 || i >= 18) game_board[10][i] = new Space(10, i);
+                if (i <= 0 || i >= 18) game_board[11][i] = new Space(11, i);
+                if (i <= 0 || i >= 18) game_board[12][i] = new Space(12, i);
+                if (i <= 0 || i >= 18) game_board[13][i] = new Space(13, i);
+                if (i <= 1 || i >= 17) game_board[14][i] = new Space(14, i);
+                if (i <= 2 || i >= 16) game_board[15][i] = new Space(15, i);
+                if (i <= 3 || i >= 15) game_board[16][i] = new Space(16, i);
+                if (i <= 4 || i >= 14) game_board[17][i] = new Space(17, i);
+                game_board[18][i] = new Space(18, i);
 
                 //neutral spaces
-                if (i >= 5 && i <= 13 && i != 9) game_board[1][i] = new Space(NEUT);
-                if (i >= 4 && i <= 14) game_board[2][i] = new Space(NEUT);
-                if ((i >= 3 && i <= 8) || (i >= 10 && i <= 15)) game_board[3][i] = new Space(NEUT);
-                if ((i >= 2 && i <= 7) || (i >= 11 && i <= 16)) game_board[4][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 6) || (i >= 12 && i <= 17)) game_board[5][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 5) || (i >= 13 && i <= 17)) game_board[6][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 4) || (i >= 14 && i <= 17)) game_board[7][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 3) || (i >= 15 && i <= 17)) game_board[8][i] = new Space(NEUT);
-                if (i == 2 || i == 16) game_board[9][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 3) || (i >= 15 && i <= 17)) game_board[10][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 4) || (i >= 14 && i <= 17)) game_board[11][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 5) || (i >= 13 && i <= 17)) game_board[12][i] = new Space(NEUT);
-                if ((i >= 1 && i <= 6) || (i >= 12 && i <= 17)) game_board[13][i] = new Space(NEUT);
-                if ((i >= 2 && i <= 7) || (i >= 11 && i <= 16)) game_board[14][i] = new Space(NEUT);
-                if ((i >= 3 && i <= 8) || (i >= 10 && i <= 15)) game_board[15][i] = new Space(NEUT);
-                if (i >= 4 && i <= 14) game_board[16][i] = new Space(NEUT);
-                if (i >= 5 && i <= 13 && i != 9) game_board[17][i] = new Space(NEUT);
+                if (i >= 5 && i <= 13 && i != 9) game_board[1][i] = new Space(NEUT, 1, i);
+                if (i >= 4 && i <= 14) game_board[2][i] = new Space(NEUT, 2, i);
+                if ((i >= 3 && i <= 9) || (i >= 10 && i <= 15)) game_board[3][i] = new Space(NEUT, 3, i);
+                if ((i >= 2 && i <= 7) || i == 9 || (i >= 11 && i <= 16)) game_board[4][i] = new Space(NEUT, 4, i);
+                if ((i >= 1 && i <= 6) || i == 9 || (i >= 12 && i <= 17)) game_board[5][i] = new Space(NEUT, 5, i);
+                if ((i >= 1 && i <= 5) || i == 9 || (i >= 13 && i <= 17)) game_board[6][i] = new Space(NEUT, 6, i);
+                if ((i >= 1 && i <= 4) || i == 9 || (i >= 14 && i <= 17)) game_board[7][i] = new Space(NEUT, 7, i);
+                if ((i >= 1 && i <= 3) || i == 9 || (i >= 15 && i <= 17)) game_board[8][i] = new Space(NEUT, 8, i);
+                if ((i >= 2 && i <= 17) || i == 9 || (i >= 15 && i <= 17)) game_board[9][i] = new Space(NEUT, 9, i);
+                if (i == 2 || i == 16) game_board[9][i] = new Space(NEUT, 9, i);
+                if ((i >= 1 && i <= 3) || i == 9 || (i >= 15 && i <= 17)) game_board[10][i] = new Space(NEUT, 10, i);
+                if ((i >= 1 && i <= 4) || i == 9 || (i >= 14 && i <= 17)) game_board[11][i] = new Space(NEUT, 11, i);
+                if ((i >= 1 && i <= 5) || i == 9 || (i >= 13 && i <= 17)) game_board[12][i] = new Space(NEUT, 12, i);
+                if ((i >= 1 && i <= 6) || i == 9 || (i >= 12 && i <= 17)) game_board[13][i] = new Space(NEUT, 13, i);
+                if ((i >= 2 && i <= 7) || i == 9 || (i >= 11 && i <= 16)) game_board[14][i] = new Space(NEUT, 14, i);
+                if ((i >= 3 && i <= 8) || i == 9 || (i >= 10 && i <= 15)) game_board[15][i] = new Space(NEUT, 15, i);
+                if (i >= 4 && i <= 14) game_board[16][i] = new Space(NEUT, 16, i);
+                if (i >= 5 && i <= 13 && i != 9) game_board[17][i] = new Space(NEUT, 17, i);
 
                 //red spaces
-                if (i == 10) game_board[4][i] = new Space(RED);
-                if (i >= 10 && i <= 11) game_board[5][i] = new Space(RED);
-                if (i >= 10 && i <= 12) game_board[6][i] = new Space(RED);
-                if (i >= 10 && i <= 13) game_board[7][i] = new Space(RED);
-                if (i >= 10 && i <= 14) game_board[8][i] = new Space(RED);
-                if (i <= 8 && i >= 4) game_board[10][i] = new Space(RED);
-                if (i <= 8 && i >= 5) game_board[11][i] = new Space(RED);
-                if (i <= 8 && i >= 6) game_board[12][i] = new Space(RED);
-                if (i <= 8 && i >= 7) game_board[13][i] = new Space(RED);
-                if (i == 8) game_board[14][i] = new Space(RED);
+                if (i == 10) game_board[4][i] = new Space(RED, 4, i);
+                if (i >= 10 && i <= 11) game_board[5][i] = new Space(RED, 5, i);
+                if (i >= 10 && i <= 12) game_board[6][i] = new Space(RED, 6, i);
+                if (i >= 10 && i <= 13) game_board[7][i] = new Space(RED, 7, i);
+                if (i >= 10 && i <= 14) game_board[8][i] = new Space(RED, 8, i);
+                if (i <= 8 && i >= 4) game_board[10][i] = new Space(RED, 10, i);
+                if (i <= 8 && i >= 5) game_board[11][i] = new Space(RED, 11, i);
+                if (i <= 8 && i >= 6) game_board[12][i] = new Space(RED, 12, i);
+                if (i <= 8 && i >= 7) game_board[13][i] = new Space(RED, 13, i);
+                if (i == 8) game_board[14][i] = new Space(RED, 14, i);
 
                 //white spaces
-                if (i == 10) game_board[14][i] = new Space(WHITE);
-                if (i >= 10 && i <= 11) game_board[13][i] = new Space(WHITE);
-                if (i >= 10 && i <= 12) game_board[12][i] = new Space(WHITE);
-                if (i >= 10 && i <= 13) game_board[11][i] = new Space(WHITE);
-                if (i >= 10 && i <= 14) game_board[10][i] = new Space(WHITE);
-                if (i <= 8 && i >= 4) game_board[8][i] = new Space(WHITE);
-                if (i <= 8 && i >= 5) game_board[7][i] = new Space(WHITE);
-                if (i <= 8 && i >= 6) game_board[6][i] = new Space(WHITE);
-                if (i <= 8 && i >= 7) game_board[5][i] = new Space(WHITE);
-                if (i == 8) game_board[4][i] = new Space(WHITE);
+                if (i == 10) game_board[14][i] = new Space(WHITE, 14, i);
+                if (i >= 10 && i <= 11) game_board[13][i] = new Space(WHITE, 13, i);
+                if (i >= 10 && i <= 12) game_board[12][i] = new Space(WHITE, 12, i);
+                if (i >= 10 && i <= 13) game_board[11][i] = new Space(WHITE, 11, i);
+                if (i >= 10 && i <= 14) game_board[10][i] = new Space(WHITE, 10, i);
+                if (i <= 8 && i >= 4) game_board[8][i] = new Space(WHITE, 8, i);
+                if (i <= 8 && i >= 5) game_board[7][i] = new Space(WHITE, 7, i);
+                if (i <= 8 && i >= 6) game_board[6][i] = new Space(WHITE, 6, i);
+                if (i <= 8 && i >= 7) game_board[5][i] = new Space(WHITE, 5, i);
+                if (i == 8) game_board[4][i] = new Space(WHITE, 4, i);
 
             }
 
             //ports
 
-            game_board[9][17] = new Space("port");
-            game_board[9][1] = new Space("port");
-            game_board[1][9] = new Space("port");
-            game_board[17][9] = new Space("port");
+            game_board[9][17] = new Space("port", 9, 17);
+            game_board[9][1] = new Space("port", 9, 1);
+            game_board[1][9] = new Space("port", 1, 9);
+            game_board[17][9] = new Space("port", 17, 9);
 
         }
 
-        public List<Space> poss_moves(Tile tile, int x, int y)
+    public List<Space> poss_moves(Space space)
+    {
+        return this.poss_moves(game_board[space.i][space.j].currentTile);
+    }
+
+
+
+    public List<Space> poss_moves(Tile tile)
+    {
+        List<Space> ans = new List<Space>();
+        int speed = tile.mobility;
+        // Ask: what is the point of posx and posy?
+        int posx = tile.j;
+        int posy = tile.i;
+        for (int i = posx - speed; i <= posx + speed; i++)
         {
-            List<Space> ans = new List<Space>();
-            int speed = tile.mobility;
-            // Ask: what is the point of posx and posy?
-            int posx = x;
-            int posy = y;
-            for (int i = posx - speed; i <= posx + speed; i++)
+            for (int r = posy - speed; r <= posy + speed; r++)
             {
-                for (int r = posy - speed; r <= posx + speed; r++)
+                if (r >= 1 && r <= 17 && i >= 1 && i <= 17 && !game_board[r][i].isNull())
                 {
-                    if (r >= 1 && r <= 17 && i >= 1 && i <= 17 && !game_board[r][i].isNull())
+                    if (Math.Abs(posx - i) + Math.Abs(posy - r) <= speed &&
+                                (game_board[r][i].type == NEUT || game_board[r][i].type == tile.color))
                     {
-                        if (Math.Abs(posx - i) + Math.Abs(posy - r) <= speed && 
-                                    (game_board[r][i].type == NEUT || game_board[r][i].type == tile.color))
+
+                        if (game_board[r][i].isEmpty())
                         {
-
-                            if (game_board[r][i].isEmpty())
-                            {
-                                if (!clash_pos(tile, r, i))
-                                {
-                                    ans.Add(game_board[r][i]);
-                                }
-
-
-                            }
-                            else if (clash(tile, game_board[r][i].getTile()))
+                            if (!clash_pos(tile, r, i))
                             {
                                 ans.Add(game_board[r][i]);
                             }
 
+
                         }
+                        else if (clash(tile, game_board[r][i].getTile()))
+                        {
+                            ans.Add(game_board[r][i]);
+                        }
+
                     }
                 }
             }
-                    return ans;
         }
+        return ans;
+    }
 
-        // t1 should be the tile known to be a flower
-        public bool clash(Tile t1, Tile t2)
+    // t1 should be the tile known to be a flower
+    public bool clash(Tile t1, Tile t2)
         {
             if (t2.isFlower() && t1.mobility == t2.mobility && t1.color != t2.color)
             {
@@ -226,6 +225,101 @@ namespace Pai_Sho
             occupied.Add(game_board[i][j]);
         }
 
-    }
+        public void move_tile(int i, int j, int di, int dj)
+        {
+            place_tile(di, dj, game_board[i][j].currentTile);
+            game_board[i][j].emptyUp();
+            occupied.Remove(game_board[i][j]);
+        }
 
-}
+        public Board copy()
+        {
+            Board newB = new Board();
+            for (int i = 0; i < 19; i++)
+            {
+                for (int j = 0; j < 19; j++)
+                {
+                    Space oldS = this.game_board[i][j];
+                    Space newS = new Space(oldS.type, oldS.i, oldS.j);
+
+                    Tile oldT;
+                    Tile newT = null;
+                    if (oldS.currentTile != null)
+                    {
+                        oldT = oldS.currentTile;
+                        newT = new Tile(oldT.mobility, oldT.owner, oldT.color, oldT.getID());
+                        newS.currentTile = newT;
+                    }
+                    else
+                    {
+                        newS.currentTile = null;
+                    }
+                    
+                    
+                    newS.currentTile = newT;
+
+                    newB.game_board[i][j] = newS;
+
+                }
+            }
+
+            List<Tile> newP = new List<Tile>();
+            List<Tile> newA = new List<Tile>();
+
+            foreach (Tile piece in this.player) newP.Add(piece);
+            foreach (Tile piece in this.ai) newA.Add(piece);
+
+            newB.ai = newA;
+            newB.player = newP;
+
+            return newB;
+        }
+
+        public void print()
+        {
+            for (int i = 0; i < 19; i++)
+            {
+                for (int j = 0; j < 19; j++)
+                {
+                    if (game_board[i][j].isEmpty()) {
+                        if (game_board[i][j].isNull())
+                        {
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.Write("N ");
+                        }
+                        else
+                        {
+                            if (game_board[i][j].type == RED)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.Write("0 ");
+                            }
+                            if (game_board[i][j].type == WHITE)
+                            {
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.Write("0 ");
+                            }
+                            if (game_board[i][j].type == NEUT)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write("0 ");
+                            }
+                            if (game_board[i][j].type == PORT)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                Console.Write("P ");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (game_board[i][j].owner == 1) Console.ForegroundColor = ConsoleColor.Blue;
+                        else if (game_board[i][j].owner == -1) Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.Write(game_board[i][j].currentTile.color + Math.Abs(game_board[i][j].pieceVal()) + " ");
+                    }
+                }
+                Console.WriteLine("");
+            }
+        }
+
+    }

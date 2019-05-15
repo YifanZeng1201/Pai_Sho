@@ -2,6 +2,7 @@
  * Updated: 5/04/2019
  */
 
+// Changelog: 5/13/2019: Added i and j parameters to keep track of location on board, added getID() so that the special ID won't have to be public
 using System;
 
 public class Tile
@@ -16,7 +17,10 @@ public class Tile
     static char BASIC = 'f';
     static char NULL = 'n';
 
-    public int mobility, owner;
+    static char RED = 'R';
+    static char WHITE = 'W';
+
+    public int mobility, owner, i, j;
     public string color;
     bool junction, exists, flower;
     char specid;
@@ -31,6 +35,8 @@ public class Tile
         this.owner = owner;
         this.color = color;
         this.specid = spec;
+        this.i = -1;
+        this.j = -1;
     }
 
     // Initializer for a basic flower tile
@@ -43,6 +49,8 @@ public class Tile
         this.owner = owner;
         this.color = color;
         this.specid = BASIC;
+        this.i = -1;
+        this.j = -1;
     }
 
     // Initializer for a null space
@@ -151,6 +159,11 @@ public class Tile
     public bool isFlower()
     {
         return flower;
+    }
+
+    public char getID()
+    {
+        return this.specid;
     }
 }
 
