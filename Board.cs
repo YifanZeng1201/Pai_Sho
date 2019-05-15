@@ -30,7 +30,7 @@ namespace Pai_Sho
         static int HOST = 0;
         static int GUEST = 1;
 
-        Space[][] game_board;
+        public Space[][] game_board;
         //number of red tiles on the board
         int num_red_tiles;
         //number of white tiles one the board
@@ -125,8 +125,14 @@ namespace Pai_Sho
         public ref Space[][] getBoard() {
             return ref game_board;
         }
+        public List<Space> poss_moves(Tile space, int y, int x)
+        {
+            return this.poss_moves(game_board[y][x]);
+        }
 
-        public List<Space> poss_moves(Space space)
+
+
+            public List<Space> poss_moves(Space space)
         {
             Tile tile = space.currentTile;
             List<Space> ans = new List<Space>();
@@ -136,7 +142,7 @@ namespace Pai_Sho
             int posy = space.i;
             for (int i = posx - speed; i <= posx + speed; i++)
             {
-                for (int r = posy - speed; r <= posx + speed; r++)
+                for (int r = posy - speed; r <= posy + speed; r++)
                 {
                     if (r >= 1 && r <= 17 && i >= 1 && i <= 17 && !game_board[r][i].isNull())
                     {
