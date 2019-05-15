@@ -6,7 +6,10 @@ namespace Pai_Sho
     public class Game
     {
 
-        static void plant(Board board, List<Tile> tiles)
+        static int MAX = 10000;
+        static int MIN = -10000;
+
+        static void plant(Board board)
         {
             string input;
             if (!board.game_board[9][1].isEmpty() && !board.game_board[9][17].isEmpty() && !board.game_board[1][9].isEmpty() && !board.game_board[17][9].isEmpty())
@@ -17,42 +20,139 @@ namespace Pai_Sho
                 input = Console.ReadLine();
                 if (input.ToLower() == "move")
                 {
-                    move(board, tiles);
+                    move(board);
                     return;
                 }
-                else if (input.ToLower() == "plant") plant(board, tiles);
+                else if (input.ToLower() == "plant") plant(board);
                 else {
                     Console.WriteLine("Invalid choice");
                     goto choice;
                 }
+            }
 
-                if (tiles.Count == 0)
+            if (board.player.Count == 0)
+            {
+                Console.WriteLine("Sorry, you have no tiles left to plant!");
+                choice:
+                Console.Write("Would you like to [plant] or [move] a piece? ");
+                input = Console.ReadLine();
+                if (input.ToLower() == "move")
                 {
-                    Console.WriteLine("Sorry, you have no tiles left to plant!");
+                    move(board);
+                    return;
+                }
+                else if (input.ToLower() == "plant") plant(board);
+                else
+                {
+                    Console.WriteLine("Invalid choice");
                     goto choice;
                 }
-
-
             }
-            Console.Write("Please choose from the ");
-            if (board.game_board[9][1].isEmpty()) Console.Write("[left]");
-            if (board.game_board[9][17].isEmpty()) Console.Write("[right]");
-            if (board.game_board[1][9].isEmpty()) Console.Write("[top]");
-            if (board.game_board[17][9].isEmpty()) Console.Write("[bottom]");
-            Console.Write("gates to plant in: ");
+
+            userget:
+            Console.Write("Please choose from [");
+            for (int i = 0; i < board.player.Count; i++)
+            {
+                if (i != board.player.Count - 1)
+                {
+                    Console.Write(board.player[i].color + board.player[i].mobility + ", ");
+                }
+                else
+                {
+                    Console.Write(board.player[i].color + board.player[i].mobility + "] to plant: ");
+                }
+            }
+
             input = Console.ReadLine();
+            Tile newT = null ;
+            for (int i = 0; i < board.player.Count; i++)
+            {
+                if (input.ToLower() == ("" + board.player[i].color.ToLower() + board.player[i].mobility))
+                {
+                    newT = board.player[i];
+                    board.player.RemoveAt(i);
+                    break;
+                }
+                else if (i == board.player.Count - 1 && input.ToLower() != ("" + board.player[i].color.ToLower() + board.player[i].mobility))
+                {
+                    Console.WriteLine("Invalid selection");
+                    goto userget;
+                }
+            }
+
+            userget2:
+            Console.Write("Please choose from the");
+            if (board.game_board[9][1].isEmpty()) Console.Write(" [left]");
+            if (board.game_board[9][17].isEmpty()) Console.Write(" [right]");
+            if (board.game_board[1][9].isEmpty()) Console.Write(" [top]");
+            if (board.game_board[17][9].isEmpty()) Console.Write(" [bottom]");
+            Console.Write(" gates to plant in: ");
+            input = Console.ReadLine();
+
+            if (input.ToLower() == "left" && board.game_board[9][1].isEmpty()) board.place_tile(9, 1, newT);
+            else if (input.ToLower() == "left" && !board.game_board[9][1].isEmpty())
+            {
+                Console.WriteLine("That gate is occupied!");
+                goto userget2;
+            }
+            else if (input.ToLower() == "right" && board.game_board[9][17].isEmpty()) board.place_tile(9, 17, newT);
+            else if (input.ToLower() == "left" && !board.game_board[9][17].isEmpty())
+            {
+                Console.WriteLine("That gate is occupied!");
+                goto userget2;
+            }
+            else if (input.ToLower() == "top" && board.game_board[1][9].isEmpty()) board.place_tile(1, 9, newT);
+            else if (input.ToLower() == "top" && !board.game_board[1][9].isEmpty())
+            {
+                Console.WriteLine("That gate is occupied!");
+                goto userget2;
+            }
+            else if (input.ToLower() == "bottom" && board.game_board[17][9].isEmpty()) board.place_tile(17, 9, newT);
+            else if (input.ToLower() == "bottom" && !board.game_board[17][9].isEmpty())
+            {
+                Console.WriteLine("That gate is occupied!");
+                goto userget2;
+            }
+            else
+            {
+                Console.WriteLine("Invalid selection");
+                goto userget2;
+            }
+
         }
 
-        static void move(Board board, List<Tile> tiles)
+        static void move(Board board)
         {
             List<Tile> player = new List<Tile>();
+            string input;
             foreach (Space spot in board.occupied)
             {
                 if (spot.owner == 1)
                 {
                     player.Add(spot.currentTile);
+                    choice:
+                    Console.Write("Would you like to [plant] or [move] a piece? ");
+                    input = Console.ReadLine();
+                    if (input.ToLower() == "move") move(board);
+                    else if (input.ToLower() == "plant")
+                    {
+                        plant(board);
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid choice");
+                        goto choice;
+                    }
                 }
             }
+
+            if (player.Count == 0)
+            {
+                Console.WriteLine("You have no moveable pieces!");
+
+            }
+
             userget:
             Console.Write("Please select a piece by [i,j] coordinates: [");
             for (int i = 0; i < player.Count; i++)
@@ -60,7 +160,7 @@ namespace Pai_Sho
                 if (i < player.Count - 1) Console.Write(player[i].color + player[i].mobility + "(" + player[i].i + "," + player[i].j + "),");
                 else Console.Write(player[i].color + player[i].mobility + "(" + player[i].i + "," + player[i].j + ")]: ");
             }
-            string input = Console.ReadLine();
+            input = Console.ReadLine();
             foreach (Tile piece in player)
             {
                 if (input == (piece.i + "," + piece.j))
@@ -72,10 +172,10 @@ namespace Pai_Sho
                         choice:
                         Console.Write("Would you like to [plant] or [move] a piece? ");
                         input = Console.ReadLine();
-                        if (input.ToLower() == "move") move(board, tiles);
+                        if (input.ToLower() == "move") move(board);
                         else if (input.ToLower() == "plant")
                         {
-                            plant(board, tiles);
+                            plant(board);
                             return;
                         }
                         else
@@ -109,14 +209,14 @@ namespace Pai_Sho
                         goto movechoice;
                     }
 
-                    foreach (Space spot in moves)
+                    for (int x = 0; i < moves.Count; i++)
                     {
-                        if (i == spot.i && j == spot.j)
+                        if (i == moves[x].i && j == moves[x].j)
                         {
                             board.move_tile(piece.i, piece.j, i, j);
                             break;
                         }
-                        else
+                        else if (x == moves.Count - 1 && !(i == moves[x].i && j == moves[x].j))
                         {
                             Console.WriteLine("Illegal move!");
                             goto movechoice;
@@ -134,6 +234,7 @@ namespace Pai_Sho
 
         static void Main()
         {
+
             int playerturn = -1;
             bool harmonyFormed = false;
             string temp = null;
@@ -141,22 +242,22 @@ namespace Pai_Sho
             int turn = 0;
             bool win = false;
 
-            List<Tile> player = new List<Tile>();
             for (int i = 3; i < 6; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    player.Add(new Tile(i, 1, "R"));
+                    board.player.Add(new Tile(i, 1, "R"));
+                    board.ai.Add(new Tile(i, -1, "R"));
                 }
             }
             for (int i = 3; i < 6; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    player.Add(new Tile(i, 1, "W"));
+                    board.player.Add(new Tile(i, 1, "W"));
+                    board.ai.Add(new Tile(i, -1, "W"));
                 }
             }
-
             while (!win)
             {
                 if (!harmonyFormed) playerturn *= -1;
@@ -171,18 +272,47 @@ namespace Pai_Sho
                     Console.Write("Please choose from [R3, R4, R5, W3, W4, W5] to plant: ");
                     string input = Console.ReadLine();
                         temp = input.ToLower();
-                        if (input.ToLower() == "r3") board.place_tile(17, 9, new Tile(3, 1, "R"));
-                        else if (input.ToLower() == "r4") board.place_tile(17, 9, new Tile(4, 1, "R"));
-                        else if (input.ToLower() == "r5") board.place_tile(17, 9, new Tile(5, 1, "R"));
-                        else if (input.ToLower() == "w3") board.place_tile(17, 9, new Tile(3, 1, "W"));
-                        else if (input.ToLower() == "w4") board.place_tile(17, 9, new Tile(4, 1, "W"));
-                        else if (input.ToLower() == "w5") board.place_tile(17, 9, new Tile(5, 1, "W"));
-                        else
-                        {
-                            Console.WriteLine("Please enter a valid selection.");
-                            goto userget;
-                        }
-                    player.RemoveAt(0);
+                    if (input.ToLower() == "r3")
+                    {
+                        board.place_tile(17, 9, new Tile(3, 1, "R"));
+                        board.player.RemoveAt(0);
+                        board.ai.RemoveAt(0);
+                    }
+                    else if (input.ToLower() == "r4")
+                    {
+                        board.place_tile(17, 9, new Tile(4, 1, "R"));
+                        board.player.RemoveAt(3);
+                        board.ai.RemoveAt(3);
+                    }
+                    else if (input.ToLower() == "r5")
+                    {
+                        board.place_tile(17, 9, new Tile(5, 1, "R"));
+                        board.player.RemoveAt(6);
+                        board.ai.RemoveAt(6);
+                    }
+                    else if (input.ToLower() == "w3")
+                    {
+                        board.place_tile(17, 9, new Tile(3, 1, "W"));
+                        board.player.RemoveAt(9);
+                        board.ai.RemoveAt(9);
+                    }
+                    else if (input.ToLower() == "w4")
+                    {
+                        board.place_tile(17, 9, new Tile(4, 1, "W"));
+                        board.player.RemoveAt(12);
+                        board.ai.RemoveAt(12);
+                    }
+                    else if (input.ToLower() == "w5")
+                    {
+                        board.place_tile(17, 9, new Tile(5, 1, "W"));
+                        board.player.RemoveAt(15);
+                        board.ai.RemoveAt(15);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please enter a valid selection.");
+                        goto userget;
+                    }
                 }
                 else if (turn == 1)
                 {
@@ -203,8 +333,8 @@ namespace Pai_Sho
                     choice:
                     Console.Write("Would you like to [plant] or [move] a piece? ");
                     string input = Console.ReadLine();
-                    if (input.ToLower() == "move") move(board, player);
-                    else if (input.ToLower() == "plant") plant(board, player);
+                    if (input.ToLower() == "move") move(board);
+                    else if (input.ToLower() == "plant") plant(board);
                     else
                     {
                         Console.WriteLine("Invalid choice");
@@ -214,6 +344,10 @@ namespace Pai_Sho
                 else
                 {
                     Console.Write("It's your opponent's turn, hit [enter] to continue... ");
+                    Treenode<int> gameTree = AI.buildGameTree(board);
+                    Treenode<Board> boardTree = AI.buildBoardTree(board);
+                    int val = AI.Minimax(0, gameTree, true, MIN, MAX);
+                    board = AI.makeMove(val, gameTree, boardTree);
                     while (Console.ReadKey().Key != ConsoleKey.Enter)
                     {
                         ;

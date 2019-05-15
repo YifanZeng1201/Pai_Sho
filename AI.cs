@@ -1,22 +1,20 @@
 ﻿/* Author: Yifan Zeng
  * Updated 5.6.2019
  */
- //Updated 5/14 : made non-intrusive changes for the sake of compatability
-using Paisho;
+//Updated 5/14 : made non-intrusive changes for the sake of compatability
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Pai_sho
-{
     public class AI
     {
 
         static int MAX = 10000;
         static int MIN = -10000;
 
-        public int Minimax(int depth, Treenode<int> root, bool isMaxPlayer, int alpha, int beta)
+        static public int Minimax(int depth, Treenode<int> root, bool isMaxPlayer, int alpha, int beta)
         {
             if (depth == 2)
             {
@@ -26,7 +24,7 @@ namespace Pai_sho
             if (isMaxPlayer)
             {
                 int best = MIN;
-                for (int i=0; i<root.ChildrenCount; i++)
+                for (int i = 0; i < root.ChildrenCount; i++)
                 {
                     int val = Minimax(depth + 1, root.GetChild(i), false, alpha, beta);
                     best = Math.Max(best, val);
@@ -41,7 +39,7 @@ namespace Pai_sho
             else
             {
                 int best = MAX;
-                for (int i=0; i<root.ChildrenCount; i++)
+                for (int i = 0; i < root.ChildrenCount; i++)
                 {
                     int val = Minimax(depth + 1, root.GetChild(i), true, alpha, beta);
                     best = Math.Min(best, val);
@@ -56,7 +54,8 @@ namespace Pai_sho
         }
 
         // development in progress
-        public Treenode<int> buildGameTree(Board board)
+
+        static public Treenode<int> buildGameTree(Board board)
         {
             Tree<int> gameTree = new Tree<int>(0);
             List<Space> currentTiles = new List<Space>();
@@ -73,7 +72,6 @@ namespace Pai_sho
                     oppTiles.Add(s);
                 }
             }
-
             foreach (Tile t1 in board.ai)
             {
                 Board cpy = board.copy();
@@ -86,21 +84,21 @@ namespace Pai_sho
                     foreach (Tile t2 in board.player)
                     {
                         Board cpy2 = cpy.copy();
-                        if (board.game_board[9][1].isEmpty())
+                        if (cpy2.game_board[9][1].isEmpty())
                         {
                             cpy2.place_tile(9, 1, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[1][9].isEmpty())
+                        if (cpy2.game_board[1][9].isEmpty())
                         {
                             cpy2.place_tile(1, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[17][9].isEmpty())
+                        if (cpy2.game_board[17][9].isEmpty())
                         {
                             cpy2.place_tile(17, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
@@ -130,21 +128,21 @@ namespace Pai_sho
                     foreach (Tile t2 in board.player)
                     {
                         Board cpy2 = cpy.copy();
-                        if (board.game_board[9][17].isEmpty())
+                        if (cpy2.game_board[9][17].isEmpty())
                         {
                             cpy2.place_tile(9, 17, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[1][9].isEmpty())
+                        if (cpy2.game_board[1][9].isEmpty())
                         {
                             cpy2.place_tile(1, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[17][9].isEmpty())
+                        if (cpy2.game_board[17][9].isEmpty())
                         {
                             cpy2.place_tile(17, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
@@ -158,7 +156,7 @@ namespace Pai_sho
                         List<Space> oppMoves = cpy2.poss_moves(s2);
                         foreach (Space o in oppMoves)
                         {
-                            cpy2.move_tile(s2.i, s2.j, o.i, o.j);
+                        cpy2.move_tile(s2.i, s2.j, o.i, o.j);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
@@ -174,21 +172,21 @@ namespace Pai_sho
                     foreach (Tile t2 in board.player)
                     {
                         Board cpy2 = cpy.copy();
-                        if (board.game_board[9][17].isEmpty())
+                        if (cpy2.game_board[9][17].isEmpty())
                         {
                             cpy2.place_tile(9, 17, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[9][1].isEmpty())
+                        if (cpy2.game_board[9][1].isEmpty())
                         {
                             cpy2.place_tile(9, 1, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[17][9].isEmpty())
+                        if (cpy2.game_board[17][9].isEmpty())
                         {
                             cpy2.place_tile(17, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
@@ -219,21 +217,21 @@ namespace Pai_sho
                     foreach (Tile t2 in board.player)
                     {
                         Board cpy2 = cpy.copy();
-                        if (board.game_board[9][17].isEmpty())
+                        if (cpy2.game_board[9][17].isEmpty())
                         {
                             cpy2.place_tile(9, 17, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[9][1].isEmpty())
+                        if (cpy2.game_board[9][1].isEmpty())
                         {
                             cpy2.place_tile(9, 1, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[1][9].isEmpty())
+                        if (cpy2.game_board[1][9].isEmpty())
                         {
                             cpy2.place_tile(1, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
@@ -263,35 +261,35 @@ namespace Pai_sho
                 foreach (Space m in moves)
                 {
 
-                    cpy.move_tile(s1.i,s1.j,m.i,m.j);  
+                    cpy.move_tile(s1.i, s1.j, m.i, m.j);
                     int value = Eval.evaluation(cpy.game_board);
                     Treenode<int> child1 = new Treenode<int>(value);
                     gameTree.Root.AddChild(child1);
                     foreach (Tile t2 in board.player)
                     {
                         Board cpy2 = cpy.copy();
-                        if (board.game_board[9][17].isEmpty())
+                        if (cpy2.game_board[9][17].isEmpty())
                         {
                             cpy2.place_tile(9, 17, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[9][1].isEmpty())
+                        if (cpy2.game_board[9][1].isEmpty())
                         {
                             cpy2.place_tile(9, 1, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[1][9].isEmpty())
+                        if (cpy2.game_board[1][9].isEmpty())
                         {
                             cpy2.place_tile(1, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
                             Treenode<int> child2 = new Treenode<int>(oppValue);
                             child1.AddChild(child2);
                         }
-                        if (board.game_board[17][9].isEmpty())
+                        if (cpy2.game_board[17][9].isEmpty())
                         {
                             cpy2.place_tile(17, 9, t2);
                             int oppValue = Eval.evaluation(cpy2.game_board);
@@ -316,7 +314,7 @@ namespace Pai_sho
             return gameTree.Root;
         }
 
-        public Treenode<Board> buildBoardTree(Board board)
+        static public Treenode<Board> buildBoardTree(Board board)
         {
             Tree<Board> boardTree = new Tree<Board>(board);
             List<Space> currentTiles = new List<Space>();
@@ -560,13 +558,13 @@ namespace Pai_sho
             return boardTree.Root;
         }
 
-        public Board makeMove (int value, Treenode<int> gameTree, Treenode<Board> boardTree)
+        static public Board makeMove(int value, Treenode<int> gameTree, Treenode<Board> boardTree)
         {
             int index = -1;
-            for (int i=0; i<gameTree.ChildrenCount; i++)
+            for (int i = 0; i < gameTree.ChildrenCount; i++)
             {
                 Treenode<int> choice = gameTree.GetChild(i);
-                for (int j=0; j<choice.ChildrenCount; j++)
+                for (int j = 0; j < choice.ChildrenCount; j++)
                 {
                     int result = choice.GetChild(j).Value;
                     if (result == value)
@@ -585,4 +583,3 @@ namespace Pai_sho
         }
 
     }
-}

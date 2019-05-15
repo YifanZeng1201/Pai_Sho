@@ -42,8 +42,8 @@ public class Space
         this.currentTile = piece;
         this.empty = false;
         this.owner = piece.owner;
-        piece.i = this.i; //y val
-        piece.j = this.j; // x val
+        piece.i = this.i;
+        piece.j = this.j;
     }
 
     // Check if the space is empty
@@ -59,9 +59,9 @@ public class Space
         else return 0;
     }
 
-    public ref Tile getTile()
+    public Tile getTile()
     {
-        return ref this.currentTile;
+        return this.currentTile;
     }
 
     public bool isNull()

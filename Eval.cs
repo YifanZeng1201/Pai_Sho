@@ -5,10 +5,6 @@
  // Changelog: 5/13/2019: Made methods static for use in the minimax algorithm
 
 using System;
-
-namespace Pai_Sho
-{
-
     class Eval
     {
         static private int open_ports(Space[][] arr)
@@ -104,8 +100,11 @@ namespace Pai_Sho
             {
                 for (int j = 0; j < 19; j++)
                 {
+                if (!arr[i][j].isEmpty())
+                {
                     if (arr[i][j].currentTile.isJunction()) sum++;
                 }
+            }
             }
             return sum;
         }
@@ -117,4 +116,3 @@ namespace Pai_Sho
             return count_harmonies(board) + count_junctions(board) + piece_value(board) + open_ports(board);
         }
     }
-}
