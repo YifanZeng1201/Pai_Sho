@@ -7,28 +7,17 @@ using System;
 
 public class Tile
 {
-
-    static char ROCK = 'r';
-    static char WHEEL = 'w';
-    static char KNOTWEED = 'k';
-    static char BOAT = 'b';
-    static char LOTUS = 'l';
-    static char ORCHID = 'o';
     static char BASIC = 'f';
     static char NULL = 'n';
 
-    static char RED = 'R';
-    static char WHITE = 'W';
-
     public int mobility, owner, i, j;
     public string color;
-    bool junction, exists, flower;
+    bool junction, flower;
     char specid;
 
     // Initializer for a special tile
     public Tile(int val, int owner, string color, char spec)
     {
-        this.exists = true;
         this.junction = false;
         this.flower = false;
         this.mobility = val;
@@ -42,7 +31,6 @@ public class Tile
     // Initializer for a basic flower tile
     public Tile(int val, int owner, string color)
     {
-        this.exists = true;
         this.junction = false;
         this.flower = true;
         this.mobility = val;
@@ -56,7 +44,6 @@ public class Tile
     // Initializer for a null space
     public Tile()
     {
-        this.exists = false;
         this.junction = false;
         this.flower = false;
         this.mobility = 0;

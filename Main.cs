@@ -24,7 +24,8 @@ namespace Pai_Sho
                     return;
                 }
                 else if (input.ToLower() == "plant") plant(board);
-                else {
+                else
+                {
                     Console.WriteLine("Invalid choice");
                     goto choice;
                 }
@@ -64,7 +65,7 @@ namespace Pai_Sho
             }
 
             input = Console.ReadLine();
-            Tile newT = null ;
+            Tile newT = null;
             for (int i = 0; i < board.player.Count; i++)
             {
                 if (input.ToLower() == ("" + board.player[i].color.ToLower() + board.player[i].mobility))
@@ -208,15 +209,14 @@ namespace Pai_Sho
                         Console.WriteLine("Invalid input");
                         goto movechoice;
                     }
-
-                    for (int x = 0; i < moves.Count; i++)
+                    foreach (Space spot in moves)
                     {
-                        if (i == moves[x].i && j == moves[x].j)
+                        if (i == spot.i && j == spot.j)
                         {
                             board.move_tile(piece.i, piece.j, i, j);
                             break;
                         }
-                        else if (x == moves.Count - 1 && !(i == moves[x].i && j == moves[x].j))
+                        else if (moves.IndexOf(spot) == moves.Count - 1 && !(i == spot.i && j == spot.j))
                         {
                             Console.WriteLine("Illegal move!");
                             goto movechoice;
@@ -241,6 +241,7 @@ namespace Pai_Sho
             Board board = new Board();
             int turn = 0;
             bool win = false;
+            bool win2 = false;
 
             for (int i = 3; i < 6; i++)
             {
@@ -258,7 +259,7 @@ namespace Pai_Sho
                     board.ai.Add(new Tile(i, -1, "W"));
                 }
             }
-            while (!win)
+            while (win == false)
             {
                 if (!harmonyFormed) playerturn *= -1;
 
@@ -271,7 +272,7 @@ namespace Pai_Sho
                     userget:
                     Console.Write("Please choose from [R3, R4, R5, W3, W4, W5] to plant: ");
                     string input = Console.ReadLine();
-                        temp = input.ToLower();
+                    temp = input.ToLower();
                     if (input.ToLower() == "r3")
                     {
                         board.place_tile(17, 9, new Tile(3, 1, "R"));
@@ -355,13 +356,16 @@ namespace Pai_Sho
                 }
                 turn++;
                 Console.Clear();
+                //win = board.win_condition(1);
+                //win2 = board.win_condition(-1);
             }
 
             board.print();
-            if (playerturn == 1) Console.WriteLine("Congratulations, you've won!");
-            else Console.WriteLine("Sorry, you lose!");
+            Console.ForegroundColor = ConsoleColor.White;
+            if (win) Console.WriteLine("Congratulations, you've won!");
+            else if (win2) Console.WriteLine("Sorry, you lose!");
 
         }
     }
-    
+
 }

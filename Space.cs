@@ -2,7 +2,7 @@
  * Updated: 5/13/2019
  */
 
- // Changelog: 5/13/2019: Added the paremeters i and j to keep track of coordinates, aded the emptyUp() method to be used when moving tiles
+// Changelog: 5/13/2019: Added the paremeters i and j to keep track of coordinates, aded the emptyUp() method to be used when moving tiles
 
 using System;
 
@@ -12,18 +12,18 @@ public class Space
     public string type;
     public int owner;
     public int i, j;
-    bool empty;
+    bool empty, harmony;
 
     // Initializer for an empty space
     public Space(string type, int i, int j)
-	{
+    {
         this.currentTile = null;
         this.empty = true;
         this.type = type;
         this.owner = 0;
         this.i = i;
         this.j = j;
-	}
+    }
 
     // Initializer for a null (border) space
     public Space(int i, int j)
@@ -75,6 +75,17 @@ public class Space
         this.currentTile = null;
         this.empty = true;
         this.owner = 0;
+    }
+
+    public void setHarmony()
+    {
+        this.harmony = true;
+    }
+
+    public bool inHarmony()
+    {
+        if (this.harmony) return true;
+        else return false;
     }
 
 }
