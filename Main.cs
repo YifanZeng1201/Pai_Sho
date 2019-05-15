@@ -130,26 +130,26 @@ namespace Pai_Sho
                 if (spot.owner == 1)
                 {
                     player.Add(spot.currentTile);
-                    choice:
-                    Console.Write("Would you like to [plant] or [move] a piece? ");
-                    input = Console.ReadLine();
-                    if (input.ToLower() == "move") move(board);
-                    else if (input.ToLower() == "plant")
-                    {
-                        plant(board);
-                        return;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid choice");
-                        goto choice;
-                    }
                 }
             }
 
             if (player.Count == 0)
             {
                 Console.WriteLine("You have no moveable pieces!");
+                choice:
+                Console.Write("Would you like to [plant] or [move] a piece? ");
+                input = Console.ReadLine();
+                if (input.ToLower() == "move") move(board);
+                else if (input.ToLower() == "plant")
+                {
+                    plant(board);
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid choice");
+                    goto choice;
+                }
 
             }
 
